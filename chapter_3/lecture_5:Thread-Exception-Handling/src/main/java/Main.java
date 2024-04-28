@@ -1,16 +1,17 @@
 import java.util.List;
 
-public class Main {
+// Chapter 3 Lecture 5 - Thread Exception Handling
+public class Ch3_Lect5 {
     public static void main(String[] args) throws InterruptedException {
-        Thread thread1 = new Thread(new CustomThreadGroup("group1"), new MyThread(1), "Thread1");
+        Thread thread1 = new Thread(new MyThread(1), "Thread1");
 
-        Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable exception) -> {
-            System.out.println(exception.getMessage());
-        });
+        Thread.setDefaultUncaughtExceptionHandler(
+                (Thread t, Throwable exception) -> System.out.println(exception.getMessage())
+        );
 
-//        thread1.setUncaughtExceptionHandler((Thread t, Throwable exception) -> {
-//            System.out.println(exception.getMessage());
-//        });
+        thread1.setUncaughtExceptionHandler(
+                (Thread t, Throwable exception) -> System.out.println(exception.getMessage())
+        );
 
         thread1.start();
         thread1.join();
@@ -29,22 +30,21 @@ public class Main {
         @Override
         public void uncaughtException(Thread t, Throwable e) {
             super.uncaughtException(t, e);
-            System.out.println(e.getMessage());
+            System.out.println("Thread: "+ t + e.getMessage());
         }
     }
 
     static class MyThread implements Runnable {
         private final int numberOfSeconds;
-
-        public MyThread(int numberOfSeconds) {
+        public MyThread (int numberOfSeconds) {
             this.numberOfSeconds = numberOfSeconds;
         }
 
         @Override
         public void run() {
-            for(int i = 0; i < numberOfSeconds; i++) {
+            for (int i = 0; i < numberOfSeconds; i++) {
                 try {
-                    System.out.println("Sleeping for 1s, thread: " + Thread.currentThread().getName());
+                    System.out.println("Sleeping for 1 second, thread: " + Thread.currentThread().getName());
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
