@@ -1,3 +1,5 @@
+//Chapter 3 Lecture 1: Thread Creation
+
 public class Main {
 //    public static void main(String[] args) throws InterruptedException {
 //        Thread thread = Thread.currentThread();
@@ -8,12 +10,11 @@ public class Main {
 //        System.out.println("Current thread: " + thread.getName());
 //    }
 
-//    public static void main(String[] args) {
+//    public static void main(String[] args) throws InterruptedException {
 //        // 1. Extend the Thread class
-//        // 2. Use Runnable interface
-//
+//        // 2. Use runnable interface
 //        MyThread myThread = new MyThread();
-//        myThread.run();
+//        myThread.start();
 //    }
 //
 //    static class MyThread extends Thread {
@@ -25,11 +26,9 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("[1] Current thread: " + Thread.currentThread().getName());
-
+//        Runnable runnable = () -> System.out.println("Current thread: " + Thread.currentThread().getName());
         Thread thread = new Thread(
-                () -> {
-                    System.out.println("[2] Current thread: " + Thread.currentThread().getName());
-                }
+                () -> System.out.println("[2] Current thread: " + Thread.currentThread().getName())
         );
         thread.setName("MyThread");
         thread.start();
