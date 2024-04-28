@@ -3,7 +3,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Ch3_Lect6 {
+public class Main {
     private static int globalCounter = 0;
 
     public static void main(String[] args) {

@@ -2,7 +2,7 @@
 
 import javax.swing.plaf.TableHeaderUI;
 
-class Scratch {
+public class Main {
 //    public static void main(String[] args) throws InterruptedException {
 //        // main thread
 //        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);

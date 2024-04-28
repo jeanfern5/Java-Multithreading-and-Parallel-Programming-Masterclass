@@ -1,7 +1,7 @@
 import java.util.List;
 
 // Chapter 3 Lecture 5 - Thread Exception Handling
-public class Ch3_Lect5 {
+public class Main {
     public static void main(String[] args) throws InterruptedException {
         Thread thread1 = new Thread(new MyThread(1), "Thread1");
 

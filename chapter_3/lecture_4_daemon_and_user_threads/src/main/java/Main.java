@@ -1,5 +1,5 @@
 // Chapter 3 Lecture 4: Daemon Threads and User Threads
-public class ch3_lect4 {
+public class Main {
     public static void main(String[] args) throws InterruptedException {
         Thread thread1 = new Thread(new MyThread(10), "Thread1"); // converted to daemon thread
         Thread thread2 = new Thread(new MyThread(3), "Thread2"); // user thread

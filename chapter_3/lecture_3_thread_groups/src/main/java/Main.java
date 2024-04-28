@@ -1,5 +1,5 @@
 // Chapter 3 Lecture 3: Thread Groups
-class Ch3_Lect3 {
+public class Main {
     public static void main(String[] args) throws InterruptedException {
 //        Thread thread1 = new Thread(() -> System.out.println("Thread1"));
 //        Thread thread2 = new Thread(() -> System.out.println("Thread2"));
