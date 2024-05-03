@@ -39,28 +39,29 @@ public class Main {
 
         @Override
         public void run() {
-            while(true) {
+            while (true) {
                 try {
-                    produceData();
+                    producerData();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }
 
-        private void produceData() throws InterruptedException {
+        private void producerData() throws InterruptedException {
             synchronized (queue) {
                 if (queue.size() == 10) {
-                    System.out.println("In producer, waiting...");
+                    System.out.println("In producer, waiting ...");
                     queue.wait();
                 }
 
-                Thread.sleep(1000);
+                Thread.sleep(500);
 
                 System.out.println("Producing data with id " + queue.size());
                 queue.add("element_" + queue.size());
 
                 if (queue.size() == 1) {
+                    // will unlock consumer from the waiting state
                     queue.notify();
                 }
             }
@@ -68,7 +69,6 @@ public class Main {
     }
 
     static class Consumer implements Runnable {
-
         private final Queue<String> queue;
 
         public Consumer(Queue<String> queue) {
@@ -79,26 +79,27 @@ public class Main {
         public void run() {
             while (true) {
                 try {
-                    consumeData();
+                    consumerData();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }
 
-        private void consumeData() throws InterruptedException {
+        private void consumerData() throws InterruptedException {
             synchronized (queue) {
                 if (queue.isEmpty()) {
-                    System.out.println("Consumer is waiting...");
+                    System.out.println("Consumer is waiting ...");
                     queue.wait();
                 }
 
-                Thread.sleep(700);
+                Thread.sleep(250);
 
                 String data = queue.remove();
-                System.out.println("Consumed data: " + data);
+                System.out.println("Consumer data " + data);
 
                 if (queue.size() == 9) {
+                    // will unlock producer from the waiting state
                     queue.notify();
                 }
             }
