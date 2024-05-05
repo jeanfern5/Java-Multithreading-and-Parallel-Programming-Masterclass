@@ -1,25 +1,27 @@
 import java.util.concurrent.CountDownLatch;
 
 public class Main {
-
     private static int foundPosition = 0;
     private static int numberOfThreads = 2;
-    private static int numberToSearch = 8;
+    private static int numberToSearch = 9;
 
     private static int[] array = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+    private static CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads); // one shot tool, once countdown reaches zero it will latch/lock
 
-    private static CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
-
+//    public static void main(String[] args) throws InterruptedException {
+//        CountDownLatch countDownLatch = new CountDownLatch(6); // one shot tool, once countdown reaches zero it will latch/lock
+//        countDownLatch.countDown(); // counts down from int provided above
+//        countDownLatch.await(); // waits until int above reaches zero
+//    }
     public static void main(String[] args) throws InterruptedException {
         int threadSlice = array.length / numberOfThreads;
 
-        for (int i = 0; i < numberOfThreads; i++) {
+        for (int i = 0; i < numberOfThreads; i++ ) {
             Thread t = new Thread(new WorkerThread(i * threadSlice, (i + 1) * threadSlice));
             t.start();
         }
-
         countDownLatch.await();
-        System.out.println("The number was found on position: " + foundPosition);
+        System.out.println("The number was found on position " + foundPosition);
     }
 
     static class WorkerThread implements Runnable {
