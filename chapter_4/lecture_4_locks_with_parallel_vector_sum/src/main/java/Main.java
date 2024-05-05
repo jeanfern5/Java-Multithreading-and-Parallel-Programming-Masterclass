@@ -72,7 +72,7 @@ public class Main {
         public void run() {
             for (int i = left; i < right; i++) {
                 lockObject.lock();
-                S = S + array[i];
+                S = S + array[i]; // critical section
                 lockObject.unlock();
             }
         }
