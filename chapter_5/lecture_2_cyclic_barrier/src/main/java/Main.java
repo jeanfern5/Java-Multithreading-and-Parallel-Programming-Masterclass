@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -5,7 +6,14 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 public class Main {
-
+//    public static void main(String[] args) throws InterruptedException, BrokenBarrierException {
+//        // barrier can be reused by new set of threads
+//        // parties - # of threads to wait for barrier
+//        // (optional) runnable to execute once all threads reached barrier, usually for clean up or initialization before threads proceed
+//        CyclicBarrier cyclicBarrier = new CyclicBarrier(4, () -> System.out.println("The barrier was released!"));
+//
+//        cyclicBarrier.await(); // waits until required amount of threads have invoked await then they will be released
+//    }
     private static int[][] array = {
             {1, 2, 3, 1},
             {2, 1, 2, 1},
@@ -36,15 +44,16 @@ public class Main {
         }
 
         System.out.println("The final array: " + Arrays.deepToString(array));
+        System.out.println("Expected and Final Array are the same: " + (Arrays.deepToString(array).equals(Arrays.deepToString(outputArray))));
     }
 
     static class WorkerThread implements Runnable {
-
         private final int columnId;
 
         public WorkerThread(int columnId) {
             this.columnId = columnId;
         }
+
 
         @Override
         public void run() {
@@ -60,7 +69,7 @@ public class Main {
                 try {
                     cyclicBarrier.await();
                 } catch (InterruptedException | BrokenBarrierException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }
