@@ -29,10 +29,14 @@ public class Main {
 
 //    static Map<String, Set<String>> processedFiles = new HashMap<>(); // Not a perfect solution due to race conditions
 
-    // improved: adding "volatile" keyword seems to have helped with race condition issue where the same file was being
-    // processed more than once - tried about 20 times
-    // this is due to the shared variable been up-to-date since it's getting the value from the main memory instead
-    // of the thread's cache which can be stale since there's a delay between the main memory and cache being synced
+    /**
+     * improved but not perfect: adding "volatile" keyword seems to have helped with race condition issue where the same file was being
+     * processed more than once - tried about 20 times
+     * this is due to the shared variable been up-to-date since it's getting the value from the main memory instead
+     * of the thread's cache which can be stale since there's a delay between the main memory and cache being synced
+     *
+     * This can still lead to a race condition but for this specific setup it doesn't since it's basic enough
+     * */
     static volatile Map<String, Set<String>> processedFiles = new HashMap<>();
 
     public static void main(String[] args) {
