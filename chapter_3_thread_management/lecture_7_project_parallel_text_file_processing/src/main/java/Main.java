@@ -26,7 +26,14 @@ public class Main {
     // 1. increase sleep timer - will give process more time to add file to map before new thread starts (reduce re-runs of the same file)
     // 2. add file to map before completing the process - risk file has an error and marked as "successful" when in fact it failed (file misses)
     // 3. add a "pending" state where it shows the file is in progress so that the new thread doesn't work on processing the file <---- best choice
-    static Map<String, Set<String>> processedFiles = new HashMap<>(); // Not a perfect solution due to race conditions
+
+//    static Map<String, Set<String>> processedFiles = new HashMap<>(); // Not a perfect solution due to race conditions
+
+    // improved: adding "volatile" keyword seems to have helped with race condition issue where the same file was being
+    // processed more than once - tried about 20 times
+    // this is due to the shared variable been up-to-date since it's getting the value from the main memory instead
+    // of the thread's cache which can be stale since there's a delay between the main memory and cache being synced
+    static volatile Map<String, Set<String>> processedFiles = new HashMap<>();
 
     public static void main(String[] args) {
         new Thread(new Watcher(processedFiles)).start();
@@ -77,9 +84,17 @@ class Watcher implements Runnable {
                         boolean fileIsNotInSuccessful = !processedFiles.get(SUCCESSFUL).contains(file.getName());
                         boolean fileIsNotInPending = !processedFiles.get(PENDING).contains(file.getName());
                         if (fileIsNotInSuccessful && fileIsNotInPending) {
-                            // Thread t = new Thread(new FileProcessor(file, processedFiles)); // leads to race condition as opposed to variable reference
-                            FileProcessor proc = new FileProcessor(file, processedFiles);
-                            Thread t = new Thread(proc);
+                            /** When "volatile" wasn't used for processedFiles there was a weird situation where
+                             * ```Thread t = new Thread(new FileProcessor(file, processedFiles));```
+                             * leads to a race condition compared to variable reference when tried over 20 times each
+                             *  ```FileProcessor proc = new FileProcessor(file, processedFiles);
+                             *     Thread t = new Thread(proc);```
+                             * I would have expected both method to have the same behaviour but doesn't seem to be the case
+                             * I wonder if the variable reference slows down the thread enough to
+                             * 1. give Thread1 enough time to update the map and Thread2 to read that file is "pending" OR
+                             * 2. read from the `processedFiles` map where the cached variable has been synced with the main memory
+                            */
+                             Thread t = new Thread(new FileProcessor(file, processedFiles));
                             t.setUncaughtExceptionHandler(new ExceptionHandler(processedFiles, file));
                             t.start();
                         }
@@ -93,7 +108,7 @@ class Watcher implements Runnable {
 
     private void sleep() {
         try {
-            Thread.sleep(10000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
