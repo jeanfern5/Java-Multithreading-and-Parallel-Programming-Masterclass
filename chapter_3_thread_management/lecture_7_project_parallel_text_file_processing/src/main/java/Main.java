@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * === REQUIREMENTS ===
  * 1. Periodically scans the ./src/main/resources directory and watches for new files
@@ -27,9 +29,9 @@ public class Main {
     // 2. add file to map before completing the process - risk file has an error and marked as "successful" when in fact it failed (file misses)
     // 3. add a "pending" state where it shows the file is in progress so that the new thread doesn't work on processing the file <---- best choice
 
-//    static Map<String, Set<String>> processedFiles = new HashMap<>(); // Not a perfect solution due to race conditions
+   //    static Map<String, Set<String>> processedFiles = new HashMap<>(); // Not a perfect solution due to race conditions
 
-    /**
+    /*
      * improved but not perfect: adding "volatile" keyword seems to have helped with race condition issue where the same file was being
      * processed more than once - tried about 20 times
      * this is due to the shared variable been up-to-date since it's getting the value from the main memory instead
@@ -37,7 +39,20 @@ public class Main {
      *
      * This can still lead to a race condition but for this specific setup it doesn't since it's basic enough
      * */
-    static volatile Map<String, Set<String>> processedFiles = new HashMap<>();
+    //    static volatile Map<String, Set<String>> processedFiles = new HashMap<>(); // first improvement - not great but can help in basic usages, if complex can still lead to raise condition
+
+    /**
+     * A better way is to use concurrent datastructures that are thread safe such as
+     * "Collections.synchronizedMap(new HashMap<>())" or "new ConcurrentHashMap<>()".
+     * ConcurrentHashMap has better performance and no need to manually synchronize when iterating map; however it
+     * has a higher memory overhead. For simple scenarios Collections.synchronizedMap can work.
+     * For concurrency applications using ConcurrentHashMap is much better.
+     *
+     * Concurrent datastructures are thread safe due to the following being done under the hood:
+     * fine grain locking, atomic updates without fulling locking, using linked list and trees
+     * for better collision handling, and better use of volatile variables.
+     */
+    static Map<String, Set<String>> processedFiles = new ConcurrentHashMap<>();
 
     public static void main(String[] args) {
         new Thread(new Watcher(processedFiles)).start();
