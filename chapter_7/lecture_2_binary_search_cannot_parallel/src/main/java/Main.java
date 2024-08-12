@@ -1,6 +1,13 @@
 import java.util.Arrays;
 
 public class Main {
+    /*
+    Binary search cannot be efficiently parallelized.
+
+    Not everything benefits from parallelization. A deep dive is needed to determine its effectiveness.
+    For example, in Binary Search, splitting work across threads can be inefficient,
+    as some threads may return no results.
+    */
 
     private static int arraySize = 20;
     private static int numberToSearch = 5;
